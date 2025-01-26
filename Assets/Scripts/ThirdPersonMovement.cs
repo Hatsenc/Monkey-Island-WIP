@@ -10,7 +10,7 @@ public class ThirdPersonMovement : MonoBehaviour
 
     // Ground check for working gravity variable and jump math
     Vector3 velocity;
-    public float gravity = -9.81f; // Adjustable gravity
+    public float gravity = -19.62f; // Adjustable gravity
     public float jumpHeight = 3f; // Adjustable Jump height
     public LayerMask groundMask;
     float groundDistance;
