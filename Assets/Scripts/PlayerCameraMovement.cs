@@ -7,23 +7,20 @@ using UnityEngine;
 
 public class PlayerCameraMovement : MonoBehaviour
 {
-    // Define constants
-    private const float low_limit = 0.0f;
-    private const float high_limit = 85.0f;
 
     // Editor Options
-    public GameObject Player;
+    // Private variables are hidden from the editor (Anything wihtout public before it)
+
+    // Camera controlls, all adjustable
     public GameObject theCamera;
-    float curZoomPos, zoomTo; // curZoomPos will be the value
-	float zoomFrom = 20f; //Midway point between nearest and farthest zoom values (a "starting position")
-    public float followDist = 5.0f;
+    public float followDist = 5.0f; // Camera distance from Gameobject
     public float mouseSensX = 35.0f;
     public float mouseSensY = 15.0f;
     public float heightOffset = 0.5f;
-    public float zoomSpeed = 100f; // Adjustable zoom speed
-    
-    // Private variables are hidden from the editor
+    public float zoomSpeed = 100f;
     private float currentZoomLevel = 95.0f; // Initial FOV
+    private const float low_limit = 0.0f; // if below 0 it flips
+    private const float high_limit = 85.0f; // Max camera height
 
     // Initialization
     void Start()
