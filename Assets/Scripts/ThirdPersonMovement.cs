@@ -13,7 +13,7 @@ public class ThirdPersonMovement : MonoBehaviour
     public float gravity = -19.62f; // Adjustable gravity
     public float jumpHeight = 3f; // Adjustable Jump height
     public LayerMask groundMask;
-    float groundDistance;
+    float groundDistance = 0;
     public Transform groundCheck;
     bool isGrounded;
     

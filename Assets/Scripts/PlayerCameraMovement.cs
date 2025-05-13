@@ -17,8 +17,6 @@ public class PlayerCameraMovement : MonoBehaviour
     public float mouseSensX = 35.0f;
     public float mouseSensY = 15.0f;
     public float heightOffset = 0.5f;
-    public float zoomSpeed = 100f;
-    private float currentZoomLevel = 95.0f; // Initial FOV
     private const float low_limit = 0.0f; // if below 0 it flips
     private const float high_limit = 85.0f; // Max camera height
 
@@ -59,9 +57,7 @@ public class PlayerCameraMovement : MonoBehaviour
         //Move to desired follow distance
         theCamera.transform.position -= theCamera.transform.forward * followDist;
 
-        float scrollDelta = Input.GetAxis("Mouse ScrollWheel"); // Get Scrollwheel input
-        currentZoomLevel -= scrollDelta * zoomSpeed; // Adjust zoom level based on scroll
-        Camera.main.fieldOfView = Mathf.Clamp(currentZoomLevel, 10f, 120f); // Smooth Camera FOV zoom
+        Camera.main.fieldOfView = 85; // Setting FOV to 85
 
     }
 }
