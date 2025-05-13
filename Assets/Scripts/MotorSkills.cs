@@ -8,39 +8,31 @@ public class LimbSwapFunctionality : MonoBehaviour
     public Item leftArm;
     public Item rightArm;
     public Item tailArm;
-    public Transform leftHand;
-    public Transform rightHand;
-    public Transform tailHand;
 
-    public void EquipItemToLimb(Item item, string limb)
-    {
-        //When something is grabbed it will notify in Debug which limb and what item
-        if (limb == "left")
+    private string[] limbs = {"right", "tail", "left"};
+    private int currentLimbIndex = 0;
+    private Item heldItem;
+
+    void Update()
+    { 
+        float scroll = Input.mouseScrollDelta.y;
+
+        if (scroll > 0f)
         {
-            leftArm = item;
-            item.transform.SetParent(leftHand);
+            currentLimbIndex = (currentLimbIndex + 1) % limbs.Length;
+            CurrentLimb();
         }
-
-
-        else if (limb == "right")
-            {
-                rightArm = item;
-                item.transform.SetParent(rightHand);
-            }
-
-
-        else if (limb == "tail")
-            {
-            tailArm = item;
-            item.transform.SetParent(tailHand);
-            }
-
-            //Snap item to correct pos and rot
-            item.transform.localPosition = Vector3.zero;
-            item.transform.localRotation = Quaternion.identity;
-
-            Debug.Log("Equipped " + item.itemName + " to " + limb + "!");
-        
+        else if (scroll < 0f)
+        {
+            currentLimbIndex = (currentLimbIndex - 1 + limbs.Length) % limbs.Length;
+            CurrentLimb();
+        }
+    }
+    public void EquipItemTo(Item item, string limb)
+    {
+        heldItem = item;
+        currentLimbIndex = System.Array.IndexOf(limbs, limb);
+        CurrentLimb();
     }
 
     public void SwapHand(string givinglimb, string gettingLimb)
@@ -58,16 +50,29 @@ public class LimbSwapFunctionality : MonoBehaviour
             Debug.Log("No item in " + givinglimb + " to move!");
             return;
         }
+    }
 
-        //Equip item to target limb
-        EquipItemToLimb(itemToMove, gettingLimb);
+    private void CurrentLimb()
+    {
+        //Clear all limbs
+        rightArm = null;
+        leftArm = null;
+        tailArm = null;
 
-        //Remove from "Giving Limb"
-        if (givinglimb == "left arm") leftArm = null;
-        else if (givinglimb == "right arm") rightArm = null;
-        else if (givinglimb == "tail") tailArm = null;
-
-        Debug.Log("Moved " + itemToMove + " from " + givinglimb + " to " + gettingLimb + ".");
-
+        //Place held item into current slot
+        string limb = limbs[currentLimbIndex];
+        switch (limb)
+        {
+            case "right":
+                rightArm = heldItem;
+                break;
+            case "left":
+                leftArm = heldItem;
+                break;
+            case "tail":
+                tailArm = heldItem;
+                break;
+        }
+        Debug.Log($"Item moved to: {limb}");
     }
 }

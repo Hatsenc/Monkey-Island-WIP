@@ -1,56 +1,49 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ItemPickup : MonoBehaviour
 {
-    private bool playerNear = false;
-    private LimbSwapFunctionality monkeyref;
+    private bool isPlayerInRange = false;  // Tracks if the player is within the pickup range
 
     void OnTriggerEnter(Collider other)
     {
+        // Check if the object entering the trigger is the player
         if (other.CompareTag("Player"))
         {
-            Debug.Log("Player entered item trigger");
-            playerNear = true;
-            monkeyref = other.GetComponent<LimbSwapFunctionality>();
-            if (monkeyref == null)
-            {
-                Debug.LogWarning("MotorSkills.cs not found on platyer!");
-            }
-        }   
+            isPlayerInRange = true;
+            Debug.Log("Player entered trigger zone.");
+        }
     }
 
     void OnTriggerExit(Collider other)
     {
+        // Check if the object exiting the trigger is the player
         if (other.CompareTag("Player"))
         {
-            Debug.Log("Player exited item trigger");
-            playerNear = false;
-            monkeyref = null;
-        }   
+            isPlayerInRange = false;
+            Debug.Log("Player left trigger zone.");
+        }
     }
 
     void Update()
     {
-        if (playerNear)
+        // When the player presses "E" and is in range, the item will be picked up
+        if (isPlayerInRange && Input.GetKeyDown(KeyCode.E))
         {
-            if (Input.GetKeyDown(KeyCode.E))
+            // Call the EquipItem method from the player's LimbSwapFunctionality script
+            LimbSwapFunctionality motorSkills = GameObject.FindWithTag("Player").GetComponent<LimbSwapFunctionality>();
+            Item item = GetComponent<Item>();
+
+            if (motorSkills != null && item != null)
             {
-                if (monkeyref != null)
-                {
-                    Item itemComponent = GetComponent<Item>();
-                    if (itemComponent != null)
-                    {
-                        Debug.Log("Item component found, equiping to right hand");
-                        monkeyref.EquipItemToLimb(itemComponent, "right");
-                        this.enabled = false;
-                    }
-                    else
-                    {
-                        Debug.LogWarning("Item component is missing on thsi object!");
-                    }
-                }
+                motorSkills.EquipItemTo(item, "right");  // Equip the item to the player's right hand (default)
+                item.transform.SetParent(GameObject.FindWithTag("Player").transform);  // Parent the item to the player
+                item.gameObject.SetActive(true);  // Make sure the item is visible in the game world
+
+                Debug.Log("Item picked up.");
+            }
+            else
+            {
+                Debug.LogWarning("MotorSkills or Item is missing!");
             }
         }
     }
