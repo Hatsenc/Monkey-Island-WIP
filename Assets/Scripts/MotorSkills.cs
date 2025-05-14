@@ -42,14 +42,21 @@ public class LimbSwapFunctionality : MonoBehaviour
     {
         heldItem = item;
         Rigidbody rb = heldItem.GetComponent<Rigidbody>();
+        BoxCollider bc = heldItem.GetComponentInChildren<BoxCollider>();
         if (rb != null)
         {
             rb.isKinematic = true;
             rb.useGravity = false;
+            bc.isTrigger = false;
         }
         currentLimbIndex = System.Array.IndexOf(limbs, limb);
         CurrentLimb();
         
+    }
+
+    public bool IsItemHeld(Item item)
+    {
+        return item != null && (item == leftArm || item == rightArm || item == tailArm);
     }
 
     public void SwapHand(string givinglimb, string gettingLimb)
@@ -95,36 +102,37 @@ public class LimbSwapFunctionality : MonoBehaviour
 
     public void DropItem()
     {
-        if (heldItem != null)
+        if (heldItem == null)
+            return;
+
+        heldItem.transform.SetParent(null);
+
+        Rigidbody rb = heldItem.GetComponent<Rigidbody>();
+        if (rb == null)
         {
-            GameObject itemObj = heldItem.gameObject;
-
-            heldItem.transform.SetParent(null);
-            itemObj.transform.position = transform.position + transform.forward;
-
-            Rigidbody rb = heldItem.GetComponent<Rigidbody>();
-            if (rb != null)
-            {
-                rb.isKinematic = false;
-                rb.useGravity = true;
-            }
-
-            rb.isKinematic = false;
-            rb.useGravity = true;
-            rb.velocity = UnityEngine.Vector3.zero;
-
-            Collider col = heldItem.GetComponentInChildren<BoxCollider>();
-
-            if (col != null)
-            {
-                col.isTrigger = false;
-                col.enabled = true;
-            }
-
-            rb.constraints = RigidbodyConstraints.None;
-            heldItem.gameObject.SetActive(true);
-            heldItem = null;
-            Debug.Log("Item dropped with greavity!");
+            rb = heldItem.gameObject.AddComponent<Rigidbody>();
         }
+
+        rb.isKinematic = false;
+        rb.useGravity = true;
+
+        // Clear the item from the current limb slot
+        string limb = limbs[currentLimbIndex];
+        switch (limb)
+        {
+            case "right":
+                rightArm = null;
+                break;
+            case "left":
+                leftArm = null;
+                break;
+            case "tail":
+                tailArm = null;
+                break;
+        }
+
+        Debug.Log("Item Dropped!");
+        heldItem = null;
     }
+
 }

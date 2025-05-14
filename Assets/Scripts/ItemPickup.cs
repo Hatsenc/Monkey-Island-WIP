@@ -2,47 +2,59 @@ using UnityEngine;
 
 public class ItemPickup : MonoBehaviour
 {
-    private bool isPlayerInRange = false;  // Tracks if the player is within the pickup range
+    private LimbSwapFunctionality limbSwapFunctionality; // Your MotorSkills script
+    private bool playerInRange = false;
 
-    void OnTriggerEnter(Collider other)
+    private void Start()
     {
-        // Check if the object entering the trigger is the player
-        if (other.CompareTag("Player"))
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
         {
-            isPlayerInRange = true;
+            limbSwapFunctionality = player.GetComponent<LimbSwapFunctionality>();
+        }
+        else
+        {
+            Debug.LogWarning("Player not found in scene!");
         }
     }
 
-    void OnTriggerExit(Collider other)
+    private void Update()
     {
-        // Check if the object exiting the trigger is the player
-        if (other.CompareTag("Player"))
+        if (playerInRange && Input.GetKeyDown(KeyCode.E))
         {
-            isPlayerInRange = false;
-        }
-    }
+            Item thisItem = GetComponent<Item>();
 
-    void Update()
-    {
-        // When the player presses "E" and is in range, the item will be picked up
-        if (isPlayerInRange && Input.GetKeyDown(KeyCode.E))
-        {
-            // Call the EquipItem method from the player's LimbSwapFunctionality script
-            LimbSwapFunctionality motorSkills = GameObject.FindWithTag("Player").GetComponent<LimbSwapFunctionality>();
-            Item item = GetComponent<Item>();
-
-            if (motorSkills != null && item != null)
+            if (thisItem == null)
             {
-                motorSkills.EquipItemTo(item, "right");  // Equip the item to the player's right hand (default)
-                item.transform.SetParent(GameObject.FindWithTag("Player").transform);  // Parent the item to the player
-                item.gameObject.SetActive(true);  // Make sure the item is visible in the game world
+                Debug.LogWarning("No Item component found on this GameObject!");
+                return;
+            }
 
-                Debug.Log("Item picked up.");
+            if (!limbSwapFunctionality.IsItemHeld(thisItem))
+            {
+                limbSwapFunctionality.EquipItemTo(thisItem, "right");
+                thisItem.transform.SetParent(limbSwapFunctionality.transform);
             }
             else
             {
-                Debug.LogWarning("MotorSkills or Item is missing!");
+                Debug.Log("Item is already held.");
             }
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            playerInRange = true;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            playerInRange = false;
         }
     }
 }
