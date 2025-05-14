@@ -10,7 +10,6 @@ public class ItemPickup : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             isPlayerInRange = true;
-            Debug.Log("Player entered trigger zone.");
         }
     }
 
@@ -20,7 +19,6 @@ public class ItemPickup : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             isPlayerInRange = false;
-            Debug.Log("Player left trigger zone.");
         }
     }
 
